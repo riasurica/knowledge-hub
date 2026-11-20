@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101710">
+  <meta name="description" content="My Knowledge Hub — a retro-inspired offline learning and knowledge dashboard.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+  <title>My Knowledge Hub</title>
+</head>
+<body>
+  <div class="scanlines" aria-hidden="true"></div>
+  <header class="topbar">
+    <button class="mobile-menu" id="mobileMenu" aria-label="Toggle navigation">☰</button>
+    <a class="brand" href="#" data-view="dashboard"><span class="brand-mark">[K]</span><span>MY KNOWLEDGE HUB</span></a>
+    <div class="top-status"><span class="pulse"></span><span id="connectionStatus">LOCAL MODE</span><span class="top-divider">|</span><span id="clock">--:--:--</span></div>
+  </header>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="side-label">MAINFRAME</div>
+      <button class="nav-item active" data-view="dashboard"><span>▦</span> Dashboard</button>
+      <button class="nav-item" data-view="library"><span>▤</span> Offline Library</button>
+      <button class="nav-item" data-view="search"><span>⌕</span> Search</button>
+      <button class="nav-item" data-view="assistant"><span>▣</span> AI Assistant <small>LOCAL</small></button>
+      <div class="side-label">LEARNING</div>
+      <button class="nav-item" data-view="courses"><span>▧</span> Courses</button>
+      <button class="nav-item" data-view="books"><span>▥</span> Books & Documents</button>
+      <button class="nav-item" data-view="games"><span>▨</span> Games & Quizzes</button>
+      <div class="side-label">PERSONAL TOOLS</div>
+      <button class="nav-item" data-view="maps"><span>⌖</span> Offline Maps</button>
+      <button class="nav-item" data-view="notes"><span>✎</span> Notes & Notebooks</button>
+      <button class="nav-item" data-view="launcher"><span>▦</span> App Launcher</button>
+      <div class="sidebar-bottom">
+        <button class="nav-item" data-view="settings"><span>⚙</span> Settings</button>
+        <div class="storage-card"><div class="storage-head"><span>LOCAL STORAGE</span><span>READY</span></div><div class="storage-bar"><i></i></div><small>Your data stays in this browser.</small></div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <section class="view active" id="view-dashboard">
+        <div class="page-heading"><div><div class="eyebrow">SYSTEM OVERVIEW / 001</div><h1>Welcome back<span class="cursor">_</span></h1><p class="muted">Your personal knowledge database. Connected to your curiosity.</p></div><div class="date-chip" id="dateChip">LOCAL DATE</div></div>
+        <div class="hero-panel">
+          <div class="hero-copy"><div class="eyebrow green">KNOWLEDGE SYSTEM // ONLINE</div><h2>Access. Analyze.<br><em>Expand your universe.</em></h2><p>A unified command deck for your resources, research, learning, and tools — built with offline capability in mind.</p><button class="primary-btn" data-go="library">OPEN LIBRARY <span>→</span></button></div>
+          <div class="hero-art" aria-hidden="true"><div class="orbit orbit-a"></div><div class="orbit orbit-b"></div><div class="terminal-graphic"><div class="terminal-top"><i></i><i></i><i></i><span>NEXUS.DATABASE</span></div><div class="terminal-lines"><b>&gt; booting hub...</b><b>&gt; loading local index</b><b>&gt; ready<span class="blink">_</span></b><div class="fake-chart"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div><div class="pixel-cross">+</div><div class="pixel-square"></div></div>
+        </div>
+        <div class="section-title"><div><span class="eyebrow">QUICK ACCESS</span><h2>Launch a module</h2></div><span class="section-count">10 MODULES</span></div>
+        <div class="module-grid">
+          <button class="module-card" data-go="library"><span class="module-icon">▤</span><strong>Offline Library</strong><small>Knowledge collection</small><b>OPEN MODULE ↗</b></button>
+          <button class="module-card" data-go="search"><span class="module-icon">⌕</span><strong>Search</strong><small>Find your resources</small><b>OPEN MODULE ↗</b></button>
+          <button class="module-card" data-go="assistant"><span class="module-icon">▣</span><strong>AI Assistant</strong><small>Local assistant setup</small><b>OPEN MODULE ↗</b></button>
+          <button class="module-card" data-go="courses"><span class="module-icon">▧</span><strong>Education</strong><small>Courses and lessons</small><b>OPEN MODULE ↗</b></button>
+          <button class="module-card" data-go="maps"><span class="module-icon">⌖</span><strong>Offline Maps</strong><small>Local map collection</small><b>OPEN MODULE ↗</b></button>
+          <button class="module-card" data-go="notes"><span class="module-icon">✎</span><strong>Notebooks</strong><small>Your saved thoughts</small><b>OPEN MODULE ↗</b></button>
+        </div>
+        <div class="bottom-grid"><div class="panel"><div class="panel-heading"><h3>RECENT ACTIVITY</h3><span class="tag">LOCAL</span></div><div class="activity-row"><span class="activity-dot"></span><div><b>Hub initialized</b><small>Workspace ready for your content</small></div><time>NOW</time></div><div class="activity-row"><span class="activity-dot dim"></span><div><b>Offline mode available</b><small>App shell can be cached on this device</small></div><time>READY</time></div></div><div class="panel quote-panel"><div class="eyebrow">FIELD NOTE / 0001</div><p>“The more that you read, the more things you will know. The more that you learn, the more places you'll go.”</p><small>— DR. SEUSS</small></div></div>
+      </section>
+
+      <section class="view" id="view-library">
+        <div class="page-heading"><div><div class="eyebrow">ARCHIVE / 010</div><h1>Offline Library</h1><p class="muted">A home for your saved knowledge resources.</p></div><span class="tag">STARTER COLLECTION</span></div>
+        <div class="notice"><b>◉ LOCAL-FIRST DESIGN</b><span>This starter interface does not include a preloaded encyclopedia. Add your own legally obtained, downloadable resources as the project grows.</span></div>
+        <div class="resource-grid">
+          <article class="resource-card"><div class="resource-symbol">W</div><div><span class="eyebrow">REFERENCE</span><h3>Wikipedia / Kiwix</h3><p>Connect a downloadable ZIM archive using a compatible local reader.</p><span class="tag amber">INTEGRATION PLANNED</span></div></article>
+          <article class="resource-card"><div class="resource-symbol">O</div><div><span class="eyebrow">OPEN LEARNING</span><h3>Open textbooks</h3><p>Organize openly licensed learning materials and study guides.</p><span class="tag amber">ADD YOUR CONTENT</span></div></article>
+          <article class="resource-card"><div class="resource-symbol">F</div><div><span class="eyebrow">REFERENCE FILES</span><h3>Personal archive</h3><p>Keep reference documents in a structured local collection.</p><span class="tag amber">ADD YOUR CONTENT</span></div></article>
+        </div>
+      </section>
+
+      <section class="view" id="view-search">
+        <div class="page-heading"><div><div class="eyebrow">INDEX QUERY / 020</div><h1>Search Hub</h1><p class="muted">Search the sample catalog and your saved notes.</p></div></div>
+        <div class="search-box"><span>⌕</span><input id="searchInput" type="search" placeholder="Search articles, courses, notes..." autocomplete="off"><kbd>ENTER</kbd></div>
+        <div id="searchResults" class="results-list"><div class="empty-state">TYPE A QUERY TO SEARCH THE LOCAL INDEX<span class="blink">_</span></div></div>
+      </section>
+
+      <section class="view" id="view-assistant">
+        <div class="page-heading"><div><div class="eyebrow">COMPUTE MODULE / 030</div><h1>AI Assistant</h1><p class="muted">A future home for a locally running language model.</p></div><span class="tag amber">BACKEND NOT CONNECTED</span></div>
+        <div class="assistant-window"><div class="assistant-bar"><span>● LOCAL ASSISTANT TERMINAL</span><span>MODEL: NOT CONFIGURED</span></div><div class="assistant-body"><div class="bot-mark">[AI]</div><div><b>HELLO, EXPLORER.</b><p>The interface is ready, but an AI model has not been connected. A real offline assistant needs a model runtime installed on the host device and a small local API service.</p><p class="muted">Possible future integration: Ollama or llama.cpp running locally. Model availability depends on your device's memory and performance.</p></div></div><div class="assistant-input"><input disabled placeholder="Assistant connection not configured"><button disabled>TRANSMIT</button></div></div>
+      </section>
+
+      <section class="view" id="view-courses">
+        <div class="page-heading"><div><div class="eyebrow">LEARNING DECK / 040</div><h1>Education Courses</h1><p class="muted">Build a personal learning path.</p></div></div>
+        <div class="course-grid"><article class="course-card"><div class="course-band">01 / SCIENCE</div><h3>Explore the natural world</h3><p>Biology, physics, chemistry, and earth science.</p><div class="progress"><i style="width:18%"></i></div><small>COURSE SHELL · 18% SAMPLE</small></article><article class="course-card"><div class="course-band purple">02 / HISTORY</div><h3>People & civilizations</h3><p>Timelines, primary sources, and world history.</p><div class="progress"><i style="width:0%"></i></div><small>READY FOR CONTENT</small></article><article class="course-card"><div class="course-band orange">03 / COMPUTING</div><h3>Understand computers</h3><p>Networks, programming, and digital systems.</p><div class="progress"><i style="width:0%"></i></div><small>READY FOR CONTENT</small></article></div>
+      </section>
+
+      <section class="view" id="view-books">
+        <div class="page-heading"><div><div class="eyebrow">DOCUMENT VAULT / 050</div><h1>Books & Documents</h1><p class="muted">Keep track of reading material and reference files.</p></div></div>
+        <div class="notice"><b>FILE STORAGE NOTE</b><span>This prototype does not upload files to a server. For a real offline document library, add a local file index using browser storage or a desktop application shell.</span></div>
+        <div class="panel empty-panel"><div class="big-symbol">▥</div><h3>YOUR DOCUMENT VAULT IS EMPTY</h3><p>Add a document catalog in a future version. Store only materials you have permission to use.</p></div>
+      </section>
+
+      <section class="view" id="view-games">
+        <div class="page-heading"><div><div class="eyebrow">ARCADE / 060</div><h1>Games & Quizzes</h1><p class="muted">Short challenges to make learning stick.</p></div></div>
+        <div class="game-feature"><div class="game-icon">?</div><div><span class="eyebrow">QUICK CHALLENGE</span><h2>General Knowledge Check</h2><p>Try a tiny sample quiz. Your score stays in this browser.</p><button class="primary-btn" id="startQuiz">START QUIZ →</button></div></div>
+        <div id="quizArea" class="panel quiz-area hidden"></div>
+      </section>
+
+      <section class="view" id="view-maps">
+        <div class="page-heading"><div><div class="eyebrow">ATLAS / 070</div><h1>Offline Maps</h1><p class="muted">Your future map room.</p></div><span class="tag amber">MAP DATA NOT INSTALLED</span></div>
+        <div class="map-placeholder"><div class="map-grid"></div><div class="map-center">⌖<span>MAP MODULE</span></div><div class="map-label label-a">N 40° 00' 00"</div><div class="map-label label-b">E 20° 00' 00"</div></div>
+        <p class="muted small-note">Map tiles and geographic datasets are not bundled. You can later integrate an offline map package such as MBTiles with a compatible local map server.</p>
+      </section>
+
+      <section class="view" id="view-notes">
+        <div class="page-heading"><div><div class="eyebrow">PERSONAL LOG / 080</div><h1>Notes & Notebooks</h1><p class="muted">Write and save notes locally in this browser.</p></div><span class="tag">AUTOSAVE ON</span></div>
+        <div class="notes-layout"><div class="panel notes-editor"><label for="noteTitle">NOTE TITLE</label><input id="noteTitle" placeholder="Untitled note"><label for="noteBody">YOUR NOTE</label><textarea id="noteBody" placeholder="Start writing..."></textarea><div class="note-actions"><button class="primary-btn" id="saveNote">SAVE NOTE</button><span id="noteStatus" class="muted">SAVED IN THIS BROWSER</span></div></div><div class="panel"><div class="panel-heading"><h3>NOTEBOOK INDEX</h3><span id="noteCount" class="tag">0 NOTES</span></div><div id="notesList" class="notes-list"><div class="empty-state">NO NOTES YET</div></div></div></div>
+      </section>
+
+      <section class="view" id="view-launcher">
+        <div class="page-heading"><div><div class="eyebrow">PROGRAM MANAGER / 090</div><h1>App Launcher</h1><p class="muted">Jump between the Hub's modules.</p></div></div>
+        <div class="launcher-grid" id="launcherGrid"></div>
+      </section>
+
+      <section class="view" id="view-settings">
+        <div class="page-heading"><div><div class="eyebrow">SYSTEM CONFIG / 100</div><h1>Settings & Themes</h1><p class="muted">Tune the terminal to your preferences.</p></div></div>
+        <div class="settings-grid"><div class="panel setting-row"><div><h3>Interface theme</h3><p class="muted">Choose the terminal accent color.</p></div><select id="themeSelect"><option value="green">Phosphor green</option><option value="amber">Amber terminal</option><option value="blue">Ice blue</option></select></div><div class="panel setting-row"><div><h3>Scanline effect</h3><p class="muted">Toggle the retro monitor overlay.</p></div><label class="switch"><input id="scanToggle" type="checkbox" checked><span></span></label></div><div class="panel setting-row"><div><h3>Local data</h3><p class="muted">Notes are saved in this browser's local storage.</p></div><button class="secondary-btn" id="exportNotes">EXPORT NOTES</button></div></div>
+        <div class="notice"><b>PRIVACY</b><span>This starter app does not send your notes to a server. Clearing browser site data may erase them. Export backups regularly.</span></div>
+      </section>
+
+      <footer class="footer"><span>MY KNOWLEDGE HUB <b>v0.1.0</b></span><span>OPEN SOURCE STARTER · BUILT FOR LOCAL-FIRST LEARNING</span></footer>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

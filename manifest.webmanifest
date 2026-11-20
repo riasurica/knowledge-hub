@@ -1,0 +1,10 @@
+{
+  "name": "My Knowledge Hub",
+  "short_name": "Knowledge Hub",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0a100d",
+  "theme_color": "#101710",
+  "description": "A retro-inspired offline knowledge and learning workspace.",
+  "icons": []
+}
