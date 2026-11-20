@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101710">
+  <meta name="theme-color" content="#10152c">
   <meta name="description" content="My Knowledge Hub — a retro-inspired offline learning and knowledge dashboard.">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="stylesheet" href="styles.css">
@@ -21,7 +21,8 @@
     <aside class="sidebar" id="sidebar">
       <div class="side-label">MAINFRAME</div>
       <button class="nav-item active" data-view="dashboard"><span>▦</span> Dashboard</button>
-      <button class="nav-item" data-view="library"><span>▤</span> Offline Library</button>
+      <button class="nav-item" data-view="library"><span>▤</span> Resource Manager</button>
+      <button class="nav-item" data-view="resources"><span>⇧</span> Resource Manager</button>
       <button class="nav-item" data-view="search"><span>⌕</span> Search</button>
       <button class="nav-item" data-view="assistant"><span>▣</span> AI Assistant <small>LOCAL</small></button>
       <div class="side-label">LEARNING</div>
@@ -47,7 +48,8 @@
         </div>
         <div class="section-title"><div><span class="eyebrow">QUICK ACCESS</span><h2>Launch a module</h2></div><span class="section-count">10 MODULES</span></div>
         <div class="module-grid">
-          <button class="module-card" data-go="library"><span class="module-icon">▤</span><strong>Offline Library</strong><small>Knowledge collection</small><b>OPEN MODULE ↗</b></button>
+          <button class="module-card" data-go="library"><span class="module-icon">▤</span><strong>Resource Manager</strong><small>Knowledge collection</small><b>OPEN MODULE ↗</b></button>
+          <button class="module-card" data-go="resources"><span class="module-icon">⇧</span><strong>Resource Manager</strong><small>Upload and organize files</small><b>OPEN MODULE ↗</b></button>
           <button class="module-card" data-go="search"><span class="module-icon">⌕</span><strong>Search</strong><small>Find your resources</small><b>OPEN MODULE ↗</b></button>
           <button class="module-card" data-go="assistant"><span class="module-icon">▣</span><strong>AI Assistant</strong><small>Local assistant setup</small><b>OPEN MODULE ↗</b></button>
           <button class="module-card" data-go="courses"><span class="module-icon">▧</span><strong>Education</strong><small>Courses and lessons</small><b>OPEN MODULE ↗</b></button>
@@ -58,13 +60,55 @@
       </section>
 
       <section class="view" id="view-library">
-        <div class="page-heading"><div><div class="eyebrow">ARCHIVE / 010</div><h1>Offline Library</h1><p class="muted">A home for your saved knowledge resources.</p></div><span class="tag">STARTER COLLECTION</span></div>
-        <div class="notice"><b>◉ LOCAL-FIRST DESIGN</b><span>This starter interface does not include a preloaded encyclopedia. Add your own legally obtained, downloadable resources as the project grows.</span></div>
-        <div class="resource-grid">
-          <article class="resource-card"><div class="resource-symbol">W</div><div><span class="eyebrow">REFERENCE</span><h3>Wikipedia / Kiwix</h3><p>Connect a downloadable ZIM archive using a compatible local reader.</p><span class="tag amber">INTEGRATION PLANNED</span></div></article>
-          <article class="resource-card"><div class="resource-symbol">O</div><div><span class="eyebrow">OPEN LEARNING</span><h3>Open textbooks</h3><p>Organize openly licensed learning materials and study guides.</p><span class="tag amber">ADD YOUR CONTENT</span></div></article>
-          <article class="resource-card"><div class="resource-symbol">F</div><div><span class="eyebrow">REFERENCE FILES</span><h3>Personal archive</h3><p>Keep reference documents in a structured local collection.</p><span class="tag amber">ADD YOUR CONTENT</span></div></article>
+        <div class="page-heading"><div><div class="eyebrow">RESOURCE DATABASE / 010</div><h1>Resource Manager</h1><p class="muted">Upload, organize, preview, and manage your personal knowledge collection.</p></div><span class="tag">DEVICE-LOCAL VAULT</span></div>
+        <div class="resource-stats">
+          <div class="resource-stat"><span>FILES IN VAULT</span><strong id="resourceCount">0</strong></div>
+          <div class="resource-stat"><span>SPACE USED</span><strong id="resourceBytes">0 B</strong></div>
+          <div class="resource-stat"><span>STORAGE MODE</span><strong>THIS DEVICE</strong></div>
         </div>
+        <div class="upload-layout">
+          <div class="panel upload-panel">
+            <div class="panel-heading"><h3>INGEST NEW RESOURCES</h3><span class="tag">PRIVATE / LOCAL</span></div>
+            <label class="drop-zone" id="dropZone" for="resourceFileInput">
+              <span class="upload-glyph">⇧</span>
+              <strong>DROP FILES INTO THE VAULT</strong>
+              <span>or select files from this device</span>
+              <small>PDF · TXT · MD · DOCX · EPUB · images · audio · video · and other files</small>
+              <input id="resourceFileInput" type="file" multiple>
+            </label>
+            <div id="uploadQueue" class="upload-queue"><span class="muted">No files selected yet.</span></div>
+            <div class="resource-fields">
+              <label>COLLECTION / CATEGORY
+                <select id="resourceCategory">
+                  <option>General</option><option>Science</option><option>History</option><option>Technology</option><option>Education</option><option>Books</option><option>Maps</option><option>Research</option><option>Personal</option>
+                </select>
+              </label>
+              <label>DESCRIPTION (OPTIONAL)
+                <input id="resourceDescription" type="text" maxlength="180" placeholder="What is this resource about?">
+              </label>
+              <label>TAGS (OPTIONAL)
+                <input id="resourceTags" type="text" maxlength="160" placeholder="e.g. biology, reference, school">
+              </label>
+            </div>
+            <div class="upload-actions"><button class="primary-btn" id="saveResources" disabled>SAVE TO MY VAULT →</button><span id="uploadStatus" class="muted">Files stay in this browser on this device.</span></div>
+          </div>
+          <aside class="panel storage-info">
+            <div class="eyebrow">LOCAL STORAGE NOTICE</div>
+            <div class="storage-big">▣</div>
+            <h3>Your vault belongs to this device.</h3>
+            <p>Files are saved in this browser's IndexedDB storage. They are not uploaded to GitHub or a cloud server.</p>
+            <ul><li>Available offline after the website has loaded and been cached</li><li>Not automatically shared with your other devices</li><li>Clearing browser data can erase your vault</li></ul>
+            <button class="secondary-btn" id="exportResourceIndex">EXPORT RESOURCE LIST</button>
+          </aside>
+        </div>
+        <div class="resource-library-head">
+          <div><div class="eyebrow">YOUR COLLECTION / INDEX</div><h2>Saved Resources</h2></div>
+          <div class="resource-filters">
+            <input id="resourceSearch" type="search" placeholder="Search your vault...">
+            <select id="resourceFilter"><option value="All">All categories</option><option>General</option><option>Science</option><option>History</option><option>Technology</option><option>Education</option><option>Books</option><option>Maps</option><option>Research</option><option>Personal</option></select>
+          </div>
+        </div>
+        <div id="resourceList" class="resource-list"><div class="empty-state">YOUR VAULT IS READY. ADD YOUR FIRST RESOURCE ABOVE.</div></div>
       </section>
 
       <section class="view" id="view-search">

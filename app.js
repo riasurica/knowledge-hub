@@ -1,7 +1,7 @@
 const $ = (s, root=document) => root.querySelector(s);
 const $$ = (s, root=document) => [...root.querySelectorAll(s)];
 const modules = [
-  ["dashboard","▦","Dashboard","System overview"],["library","▤","Offline Library","Knowledge archive"],["search","⌕","Search","Local index"],["assistant","▣","AI Assistant","Local AI setup"],["courses","▧","Courses","Learning paths"],["books","▥","Books & Documents","Document vault"],["games","▨","Games & Quizzes","Learning arcade"],["maps","⌖","Offline Maps","Atlas module"],["notes","✎","Notes & Notebooks","Personal log"],["launcher","▦","App Launcher","Program manager"],["settings","⚙","Settings","System config"]
+  ["dashboard","▦","Dashboard","System overview"],["library","▤","Offline Library","Knowledge archive"],["resources","⇧","Resource Manager","Upload and organize files"],["search","⌕","Search","Local index"],["assistant","▣","AI Assistant","Local AI setup"],["courses","▧","Courses","Learning paths"],["books","▥","Books & Documents","Document vault"],["games","▨","Games & Quizzes","Learning arcade"],["maps","⌖","Offline Maps","Atlas module"],["notes","✎","Notes & Notebooks","Personal log"],["launcher","▦","App Launcher","Program manager"],["settings","⚙","Settings","System config"]
 ];
 function navigate(view){
   $$(".view").forEach(el=>el.classList.toggle("active",el.id===`view-${view}`));
@@ -88,7 +88,136 @@ $("#exportNotes").addEventListener("click",()=>{
   const blob=new Blob([JSON.stringify(loadNotes(),null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="my-knowledge-hub-notes.json";a.click();URL.revokeObjectURL(url);
 });
 
+
 // The shell can be cached when hosted over HTTPS or localhost.
 if("serviceWorker" in navigator && (location.protocol==="https:"||location.hostname==="localhost")){
   window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
 }
+
+
+// Resource Manager: files are stored as Blob records in IndexedDB on this device.
+// This is intentionally local-only: no file is sent to GitHub or a remote server.
+const RESOURCE_DB="mkh_resource_vault_v2";
+const RESOURCE_STORE="resources";
+let selectedResourceFiles=[];
+let resourceObjectUrls=[];
+
+function openResourceDB(){
+  return new Promise((resolve,reject)=>{
+    if(!("indexedDB" in window)){reject(new Error("IndexedDB is not available in this browser."));return;}
+    const request=indexedDB.open(RESOURCE_DB,1);
+    request.onupgradeneeded=()=>{const db=request.result;if(!db.objectStoreNames.contains(RESOURCE_STORE)){const store=db.createObjectStore(RESOURCE_STORE,{keyPath:"id"});store.createIndex("created","created");store.createIndex("category","category");}};
+    request.onsuccess=()=>resolve(request.result);
+    request.onerror=()=>reject(request.error||new Error("Could not open local resource storage."));
+  });
+}
+async function resourceTransaction(mode,action){
+  const db=await openResourceDB();
+  return new Promise((resolve,reject)=>{
+    const tx=db.transaction(RESOURCE_STORE,mode),store=tx.objectStore(RESOURCE_STORE);
+    let request;
+    try{request=action(store)}catch(err){db.close();reject(err);return}
+    tx.oncomplete=()=>{db.close();resolve(request?.result)};
+    tx.onerror=()=>{const err=tx.error;db.close();reject(err||new Error("Storage operation failed."))};
+    tx.onabort=()=>{const err=tx.error;db.close();reject(err||new Error("Storage operation was cancelled."))};
+  });
+}
+async function getAllResources(){return (await resourceTransaction("readonly",s=>s.getAll()))||[]}
+async function putResource(item){return resourceTransaction("readwrite",s=>s.put(item))}
+async function deleteResource(id){return resourceTransaction("readwrite",s=>s.delete(id))}
+function formatBytes(bytes){
+  if(!bytes)return "0 B";const units=["B","KB","MB","GB"];let n=bytes,i=0;
+  while(n>=1024&&i<units.length-1){n/=1024;i++}
+  return `${n.toFixed(i===0?0:1)} ${units[i]}`;
+}
+function renderUploadQueue(){
+  const q=$("#uploadQueue"),save=$("#saveResources");
+  if(!selectedResourceFiles.length){q.innerHTML='<span class="muted">No files selected yet.</span>';save.disabled=true;return}
+  q.innerHTML=selectedResourceFiles.map((f,i)=>`<div class="queue-item"><span>▤</span><div><b>${escapeHTML(f.name)}</b><small>${formatBytes(f.size)} · ${escapeHTML(f.type||"Unknown file type")}</small></div><button type="button" data-remove-queued="${i}" aria-label="Remove ${escapeHTML(f.name)}">×</button></div>`).join("");
+  save.disabled=false;
+  $$("[data-remove-queued]").forEach(b=>b.addEventListener("click",()=>{selectedResourceFiles.splice(+b.dataset.removeQueued,1);renderUploadQueue()}));
+}
+function selectResourceFiles(files){
+  const incoming=[...files];
+  const maxFile=250*1024*1024;
+  const tooLarge=incoming.filter(f=>f.size>maxFile);
+  selectedResourceFiles=[...selectedResourceFiles,...incoming.filter(f=>f.size<=maxFile)];
+  renderUploadQueue();
+  if(tooLarge.length)$("#uploadStatus").textContent=`Skipped ${tooLarge.length} file(s) larger than 250 MB.`;
+  else $("#uploadStatus").textContent=`${selectedResourceFiles.length} file(s) ready to save.`;
+}
+const fileInput=$("#resourceFileInput");
+fileInput?.addEventListener("change",e=>{selectResourceFiles(e.target.files);e.target.value=""});
+const dropZone=$("#dropZone");
+if(dropZone){
+  ["dragenter","dragover"].forEach(evt=>dropZone.addEventListener(evt,e=>{e.preventDefault();dropZone.classList.add("drag-over")}));
+  ["dragleave","drop"].forEach(evt=>dropZone.addEventListener(evt,e=>{e.preventDefault();dropZone.classList.remove("drag-over")}));
+  dropZone.addEventListener("drop",e=>selectResourceFiles(e.dataTransfer.files));
+}
+$("#saveResources")?.addEventListener("click",async()=>{
+  if(!selectedResourceFiles.length)return;
+  const btn=$("#saveResources"),status=$("#uploadStatus");
+  btn.disabled=true;btn.textContent="SAVING...";
+  const category=$("#resourceCategory").value;
+  const description=$("#resourceDescription").value.trim();
+  const tags=$("#resourceTags").value.split(",").map(t=>t.trim()).filter(Boolean);
+  let saved=0;
+  try{
+    for(const file of selectedResourceFiles){
+      const record={id:crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random().toString(16).slice(2)}`,name:file.name,type:file.type||"application/octet-stream",size:file.size,category,description,tags,created:Date.now(),blob:file};
+      await putResource(record);saved++;
+    }
+    selectedResourceFiles=[];renderUploadQueue();$("#resourceDescription").value="";$("#resourceTags").value="";
+    status.textContent=`${saved} resource(s) saved on this device.`;await renderResources();
+  }catch(err){
+    status.textContent=`Could not save files: ${err.message||"storage error"}`;
+  }finally{btn.disabled=!selectedResourceFiles.length;btn.textContent="SAVE TO MY VAULT →"}
+});
+function releaseResourceUrls(){resourceObjectUrls.forEach(URL.revokeObjectURL);resourceObjectUrls=[]}
+async function renderResources(){
+  const list=$("#resourceList");if(!list)return;
+  try{
+    const all=await getAllResources();
+    const query=($("#resourceSearch")?.value||"").trim().toLowerCase();
+    const category=$("#resourceFilter")?.value||"All";
+    const filtered=all.filter(r=>(category==="All"||r.category===category)&&[r.name,r.category,r.description,(r.tags||[]).join(" ")].join(" ").toLowerCase().includes(query)).sort((a,b)=>b.created-a.created);
+    $("#resourceCount").textContent=all.length;
+    $("#resourceBytes").textContent=formatBytes(all.reduce((n,r)=>n+(r.size||0),0));
+    releaseResourceUrls();
+    if(!filtered.length){
+      list.innerHTML=all.length?'<div class="empty-state">NO RESOURCES MATCH THIS SEARCH.</div>':'<div class="empty-state">YOUR VAULT IS READY. ADD YOUR FIRST RESOURCE ABOVE.</div>';
+      return;
+    }
+    list.innerHTML=filtered.map(r=>{
+      const url=URL.createObjectURL(r.blob);resourceObjectUrls.push(url);
+      const canPreview=r.type.startsWith("image/")||r.type==="application/pdf"||r.type.startsWith("text/")||/\.(txt|md|html|csv|json)$/i.test(r.name);
+      const safeName=escapeHTML(r.name);
+      return `<article class="saved-resource"><div class="saved-resource-icon">${r.type.startsWith("image/")?"▧":r.type==="application/pdf"?"PDF":r.type.startsWith("audio/")?"♫":r.type.startsWith("video/")?"▶":"▤"}</div><div class="saved-resource-main"><div class="saved-resource-top"><strong>${safeName}</strong><span class="tag">${escapeHTML(r.category||"General")}</span></div><p>${escapeHTML(r.description||"No description added.")}</p><div class="resource-meta">${formatBytes(r.size)} · ${new Date(r.created).toLocaleDateString()}${(r.tags||[]).length?" · "+escapeHTML(r.tags.join(", ")):""}</div></div><div class="saved-resource-actions">${canPreview?`<button class="secondary-btn" data-preview-resource="${r.id}" data-url="${url}">PREVIEW</button>`:""}<button class="secondary-btn" data-download-resource="${r.id}">DOWNLOAD</button><button class="danger-btn" data-delete-resource="${r.id}">DELETE</button></div></article>`;
+    }).join("");
+    $$("[data-preview-resource]").forEach(b=>b.addEventListener("click",async()=>{
+      const item=all.find(x=>x.id===b.dataset.previewResource);if(!item)return;
+      const url=URL.createObjectURL(item.blob);
+      const win=window.open(url,"_blank","noopener");
+      if(!win){const a=document.createElement("a");a.href=url;a.target="_blank";a.click()}
+      setTimeout(()=>URL.revokeObjectURL(url),60000);
+    }));
+    $$("[data-download-resource]").forEach(b=>b.addEventListener("click",()=>{
+      const item=all.find(x=>x.id===b.dataset.downloadResource);if(!item)return;
+      const url=URL.createObjectURL(item.blob),a=document.createElement("a");a.href=url;a.download=item.name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    }));
+    $$("[data-delete-resource]").forEach(b=>b.addEventListener("click",async()=>{
+      const item=all.find(x=>x.id===b.dataset.deleteResource);if(!item)return;
+      if(!confirm(`Delete "${item.name}" from this device's vault?`))return;
+      await deleteResource(item.id);await renderResources();
+    }));
+  }catch(err){list.innerHTML=`<div class="empty-state">LOCAL DATABASE ERROR: ${escapeHTML(err.message||"Unable to load resources")}</div>`}
+}
+$("#resourceSearch")?.addEventListener("input",renderResources);
+$("#resourceFilter")?.addEventListener("change",renderResources);
+$("#exportResourceIndex")?.addEventListener("click",async()=>{
+  const all=await getAllResources();
+  const index=all.map(({blob,...meta})=>meta);
+  const blob=new Blob([JSON.stringify({exported:new Date().toISOString(),storage:"local-only",resources:index},null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="my-knowledge-hub-resource-index.json";a.click();URL.revokeObjectURL(url);
+});
+renderResources();

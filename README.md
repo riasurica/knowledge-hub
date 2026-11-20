@@ -9,6 +9,8 @@ A retro-computer-inspired, responsive, open-source starter UI for an offline-fir
 - Navigation and custom app launcher
 - Sample local search catalog
 - Notes stored in browser local storage, with JSON export
+- Resource Manager for uploading, previewing, renaming, downloading, searching, and deleting files
+- Uploaded files stored in this browser on this device using IndexedDB
 - Sample quiz
 - Offline app-shell caching through a service worker (when served from HTTPS or localhost)
 - Clearly marked integration placeholders for offline library archives, maps, documents, and local AI
@@ -39,8 +41,8 @@ Then open `http://localhost:8000`.
 GitHub Pages hosts the static front end. It does not run a private backend, database server, map tile server, or local AI model.
 
 The current starter is a UI prototype:
-- Notes and theme preferences are saved in this browser only.
-- The search function searches a small sample catalog and saved notes.
+- Notes, theme preferences, and uploaded resources are saved in this browser only.
+- The search function searches a small sample catalog and saved notes; Resource Manager has its own file search.
 - The quiz contains three sample questions.
 - The library, books, maps, and AI screens are interface placeholders, not connected services.
 - The service worker caches the app shell; it does not automatically download encyclopedia archives, books, map datasets, or AI models.
@@ -75,8 +77,22 @@ Possible later services:
 
 ## Privacy and backups
 
-Notes are stored in browser local storage. They do not sync between devices. Export notes regularly using Settings → Export Notes. Clearing browser data can remove local notes.
+Notes are stored in browser local storage. Uploaded files and notes do not sync between devices. The Resource Manager stores file contents in IndexedDB; a future backend is needed for cloud synchronization. Export notes regularly using Settings → Export Notes. Clearing browser data can remove local notes.
 
 ## License
 
 MIT License. You may use, modify, and share this starter. Keep this license and copyright notice with redistributed copies.
+
+
+## Resource Manager (local-only)
+
+The Resource Manager lets you select or drag-and-drop files into the website UI. Files are stored as Blob records in the browser's IndexedDB database on the current device.
+
+- No resource files are sent to GitHub or a cloud server.
+- You can filter and search the saved collection, preview supported file types, download, and delete resources.
+- The "Export Resource List" button exports metadata only, not the files themselves.
+- Browser storage is subject to device/browser quotas and may be cleared by the user or browser.
+- The vault is not automatically shared between browsers, profiles, or devices. Make separate backups of important files.
+- For best results, host over HTTPS or run on localhost. Private browsing modes may restrict persistent storage.
+
+The service worker caches the website shell only; it does not automatically cache every uploaded file for use outside the browser's storage.
